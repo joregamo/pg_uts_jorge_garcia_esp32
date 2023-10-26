@@ -3,7 +3,7 @@
 
 
 
-//Sensor Voltaje para medir el panel.
+//Sensor Voltaje FZ043 para medir el panel.
 
 const int voltageSensorPin = 32;
 VoltageSensor sensor(voltageSensorPin);
