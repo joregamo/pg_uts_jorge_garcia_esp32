@@ -8,6 +8,6 @@ CurrentSensor::CurrentSensor(int pin) : _pin(pin) {
 float CurrentSensor::getCurrent() {
     float voltage = analogRead(_pin) * (V_REF / ADC_RESOLUTION);
     float voltageDifference = voltage - SENSOR_OFFSET;
-    float current = voltageDifference / SENSOR_SENSITIVITY; //0.3 is the error I got for my sensor
+    float current = voltageDifference / SENSOR_SENSITIVITY; 
     return current;
 }
