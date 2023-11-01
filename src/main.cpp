@@ -4,6 +4,8 @@
 #include "TemperatureAmbientSensor.h" 
 #include "TemperatureColectorSensor.h"
 #include "DS18B20Scanner.h"
+#include "PressureIntColector.h"
+#include "PressureOutColector.h"
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
@@ -23,6 +25,12 @@ TemperatureAmbientSensor tempSensor(temperatureSensorPin);
 // Sensores de temperatura Colector Solar
 const int temperatureColectorPin = 4;
 TemperatureColectorSensor colectorSensors(temperatureColectorPin);
+
+// Sensores de Presión
+const int pressureIntColectorPin = 25;
+const int pressureOutColectorPin = 26;
+PressureIntColector pressureIntColector(pressureIntColectorPin);
+PressureOutColector pressureOutColector(pressureOutColectorPin);
 
 void setup() {
     Serial.begin(115200);
@@ -47,6 +55,8 @@ void setup() {
     // }
     tempSensor.begin();  // Inicializa el sensor de temperatura
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
+    pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
+    pressureOutColector.begin();  // Inicializa el sensor de presión en la salida
 }
 
 void loop() {
@@ -85,6 +95,18 @@ void loop() {
     Serial.print("Temperature Out Colector: ");
     Serial.print(temperatureOut, 2);
     Serial.println(" °C");
+
+    // Lectura y despliegue de la presión a la entrada del colector
+    float pressureInt = pressureIntColector.readPressure();
+    Serial.print("Pressure Int Colector: ");
+    Serial.print(pressureInt, 2);
+    Serial.println(" MPa");
+
+    // Lectura y despliegue de la presión a la salida del colector
+    float pressureOut = pressureOutColector.readPressure();
+    Serial.print("Pressure Out Colector: ");
+    Serial.print(pressureOut, 2);
+    Serial.println(" MPa");
 
     delay(1000);
 }
