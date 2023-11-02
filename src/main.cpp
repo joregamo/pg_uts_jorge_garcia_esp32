@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "WiFiManager.h"
 #include "VoltageSensor.h"
 #include "CurrentSensor.h"
 #include "TemperatureAmbientSensor.h" 
@@ -12,6 +13,12 @@
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
+
+//WiFi
+const char* ssid = "iPhone"; //NombreDeTuRed
+const char* password = "8dejunio"; //ContraseñaDeTuRed
+
+WiFiManager wifiManager(ssid, password);
 
 // Sensor de voltaje
 const int voltageSensorPin = 32;
@@ -49,6 +56,15 @@ LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
 
 void setup() {
     Serial.begin(115200);
+    wifiManager.connect(); // Conecta a la red WiFi
+    tempSensor.begin();  // Inicializa el sensor de temperatura
+    colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
+    pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
+    pressureOutColector.begin();  // Inicializa el sensor de presión en la salida
+    flowIntColector.begin();  // Inicializa el sensor de flujo en la entrada
+    flowOutColector.begin();  // Inicializa el sensor de flujo en la salida
+    lcdManager.begin();  // Inicializa la LCD
+
     // scanner.begin();
   
     // int numberOfDevices = scanner.getDeviceCount();
@@ -68,14 +84,7 @@ void setup() {
     //         Serial.println();
     //     }
     // }
-    tempSensor.begin();  // Inicializa el sensor de temperatura
-    colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
-    pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
-    pressureOutColector.begin();  // Inicializa el sensor de presión en la salida
-    flowIntColector.begin();  // Inicializa el sensor de flujo en la entrada
-    flowOutColector.begin();  // Inicializa el sensor de flujo en la salida
-    lcdManager.begin();  // Inicializa la LCD
-
+    
 }
 
 void loop() {
