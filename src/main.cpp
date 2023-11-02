@@ -71,10 +71,10 @@ void loop() {
     Serial.println(" V");
 
     // Lectura y despliegue de la corriente
-    float current = currentSensor.getCurrent();
+    float averageCurrent = currentSensor.getAverageCurrent(200);
   
     Serial.print("Current: ");
-    Serial.print(current, 2);
+    Serial.print(averageCurrent, 3);
     Serial.println(" A");
 
     // Lectura y despliegue de la temperatura ambiente
