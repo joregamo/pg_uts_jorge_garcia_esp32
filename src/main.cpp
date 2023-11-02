@@ -6,6 +6,9 @@
 #include "DS18B20Scanner.h"
 #include "PressureIntColector.h"
 #include "PressureOutColector.h"
+#include "FlowIntColector.h"
+#include "FlowOutColector.h"
+#include "LCDManager.h"
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
@@ -32,6 +35,18 @@ const int pressureOutColectorPin = 26;
 PressureIntColector pressureIntColector(pressureIntColectorPin);
 PressureOutColector pressureOutColector(pressureOutColectorPin);
 
+// Sensores de Flujo
+const int flowIntColectorPin = 12;
+const int flowOutColectorPin = 13;
+FlowIntColector flowIntColector(flowIntColectorPin);
+FlowOutColector flowOutColector(flowOutColectorPin);
+
+//LCD
+const uint8_t lcdAddr = 0x27;  // Dirección I2C de la LCD
+const uint8_t lcdCols = 16;
+const uint8_t lcdRows = 2;
+LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
+
 void setup() {
     Serial.begin(115200);
     // scanner.begin();
@@ -57,6 +72,10 @@ void setup() {
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
     pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
     pressureOutColector.begin();  // Inicializa el sensor de presión en la salida
+    flowIntColector.begin();  // Inicializa el sensor de flujo en la entrada
+    flowOutColector.begin();  // Inicializa el sensor de flujo en la salida
+    lcdManager.begin();  // Inicializa la LCD
+
 }
 
 void loop() {
@@ -108,7 +127,24 @@ void loop() {
     Serial.print(pressureOut, 2);
     Serial.println(" MPa");
 
-    delay(1000);
+    // Lectura y despliegue del flujo a la entrada del colector
+    float flowInt = flowIntColector.readFlow();
+    Serial.print("Flow Int Colector: ");
+    Serial.print(flowInt, 2);
+    Serial.println(" mL/min");
+
+    // Lectura y despliegue del flujo a la salida del colector
+    float flowOut = flowOutColector.readFlow();
+    Serial.print("Flow Out Colector: ");
+    Serial.print(flowOut, 2);
+    Serial.println(" mL/min");
+
+    // Actualizar la pantalla LCD
+    lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
+                           pressureInt, pressureOut, flowInt, flowOut);
+    
+
+    delay(2000);
 }
 
 
