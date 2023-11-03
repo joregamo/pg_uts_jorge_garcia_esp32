@@ -15,13 +15,8 @@
 // DS18B20Scanner scanner(DS18B20_PIN);
 
 //WiFi
-<<<<<<< HEAD
 const char* ssid = "FLIA_GARCIA_GOMEZ"; //NombreDeTuRed
 const char* password = "1098797932"; //ContraseñaDeTuRed
-=======
-const char* ssid = "iPhone"; //NombreDeTuRed
-const char* password = "8dejunio"; //ContraseñaDeTuRed
->>>>>>> 8b2dfef (Se ajustó el main.cpp para que funcionará la funcion de la LCD y el del sensor de flujo, en la pantalla LCD solo imprime dos variables cada dos segundos)
 
 WiFiManager wifiManager(ssid, password);
 
@@ -59,16 +54,10 @@ const uint8_t lcdCols = 16;
 const uint8_t lcdRows = 2;
 LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
 
-<<<<<<< HEAD
 
 void setup() {
     Serial.begin(115200);
     wifiManager.connectToWiFi(); // Conecta a la red WiFi
-=======
-void setup() {
-    Serial.begin(115200);
-    wifiManager.connect(); // Conecta a la red WiFi
->>>>>>> 8b2dfef (Se ajustó el main.cpp para que funcionará la funcion de la LCD y el del sensor de flujo, en la pantalla LCD solo imprime dos variables cada dos segundos)
     tempSensor.begin();  // Inicializa el sensor de temperatura
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
     pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
@@ -160,18 +149,11 @@ void loop() {
     Serial.print(flowOut, 2);
     Serial.println(" mL/min");
 
-<<<<<<< HEAD
-    
+    //LCD Display
     lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
                             pressureInt, pressureOut, flowInt, flowOut);
    
         
-=======
-    // Actualizar la pantalla LCD
-    lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
-                           pressureInt, pressureOut, flowInt, flowOut);
-    
->>>>>>> 8b2dfef (Se ajustó el main.cpp para que funcionará la funcion de la LCD y el del sensor de flujo, en la pantalla LCD solo imprime dos variables cada dos segundos)
 
     delay(2000);
 }
