@@ -15,8 +15,8 @@
 // DS18B20Scanner scanner(DS18B20_PIN);
 
 //WiFi
-const char* ssid = "iPhone"; //NombreDeTuRed
-const char* password = "8dejunio"; //ContraseñaDeTuRed
+const char* ssid = "FLIA_GARCIA_GOMEZ"; //NombreDeTuRed
+const char* password = "1098797932"; //ContraseñaDeTuRed
 
 WiFiManager wifiManager(ssid, password);
 
@@ -25,7 +25,7 @@ const int voltageSensorPin = 32;
 VoltageSensor voltageSensor(voltageSensorPin);
 
 // Sensor de corriente
-const int currentSensorPin = 27;
+const int currentSensorPin = 33;
 CurrentSensor currentSensor(currentSensorPin);
 
 // Sensor de temperatura ambiente
@@ -37,8 +37,8 @@ const int temperatureColectorPin = 4;
 TemperatureColectorSensor colectorSensors(temperatureColectorPin);
 
 // Sensores de Presión
-const int pressureIntColectorPin = 25;
-const int pressureOutColectorPin = 26;
+const int pressureIntColectorPin = 34;
+const int pressureOutColectorPin = 35;
 PressureIntColector pressureIntColector(pressureIntColectorPin);
 PressureOutColector pressureOutColector(pressureOutColectorPin);
 
@@ -54,9 +54,10 @@ const uint8_t lcdCols = 16;
 const uint8_t lcdRows = 2;
 LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
 
+
 void setup() {
     Serial.begin(115200);
-    wifiManager.connect(); // Conecta a la red WiFi
+    wifiManager.connectToWiFi(); // Conecta a la red WiFi
     tempSensor.begin();  // Inicializa el sensor de temperatura
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
     pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
@@ -148,10 +149,11 @@ void loop() {
     Serial.print(flowOut, 2);
     Serial.println(" mL/min");
 
-    // Actualizar la pantalla LCD
-    lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
-                           pressureInt, pressureOut, flowInt, flowOut);
     
+    lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
+                            pressureInt, pressureOut, flowInt, flowOut);
+   
+        
 
     delay(2000);
 }
