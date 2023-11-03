@@ -129,13 +129,13 @@ void loop() {
     float pressureInt = pressureIntColector.readPressure();
     Serial.print("Pressure Int Colector: ");
     Serial.print(pressureInt, 2);
-    Serial.println(" MPa");
+    Serial.println(" PSI");
 
     // Lectura y despliegue de la presión a la salida del colector
     float pressureOut = pressureOutColector.readPressure();
     Serial.print("Pressure Out Colector: ");
     Serial.print(pressureOut, 2);
-    Serial.println(" MPa");
+    Serial.println(" PSI");
 
     // Lectura y despliegue del flujo a la entrada del colector
     float flowInt = flowIntColector.readFlow();

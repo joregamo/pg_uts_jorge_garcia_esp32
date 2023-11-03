@@ -11,7 +11,8 @@ void PressureOutColector::begin() {
 
 float PressureOutColector::readPressure() {
     float V = analogRead(_pin) * 5.00 / 4095.0; // Ajuste para ESP32 (3.3V o 5V y 4095 niveles)
-    float P = (V - OffSetOut) / 4;  // Calcular la presión en MPa
-    return P;
+    float P_MPa = (V - OffSetOut) / 4;  // Calcular la presión en MPa
+    float P_PSI = P_MPa * 145.038; // Convertir de MPa a PSI
+    return P_PSI;
 }
 
