@@ -1,7 +1,7 @@
 // PressureOutColector.cpp
 #include "PressureOutColector.h"
 
-const float OffSetOut = 0.693;  // Ajusta según la calibración de 0.483V a 0.693V
+const float OffSetOut = 0.718;  // Ajusta según la calibración de 0.483V a 0.693V, 0.718V
 
 PressureOutColector::PressureOutColector(int pin) : _pin(pin) {}
 

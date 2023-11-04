@@ -1,7 +1,7 @@
 // PressureIntColector.cpp
 #include "PressureIntColector.h"
 
-const float OffSetInt = 0.693;  // Ajusta según la calibración de 0.483V a 0.693V
+const float OffSetInt = 0.718;  // Ajusta según la calibración de 0.483V a 0.693V, 0.718V
 
 PressureIntColector::PressureIntColector(int pin) : _pin(pin) {}
 

@@ -52,7 +52,7 @@ FlowOutColector flowOutColector(flowOutColectorPin);
 const uint8_t lcdAddr = 0x27;  // Dirección I2C de la LCD
 const uint8_t lcdCols = 16;
 const uint8_t lcdRows = 2;
-LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
+// LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
 
 
 void setup() {
@@ -64,7 +64,7 @@ void setup() {
     pressureOutColector.begin();  // Inicializa el sensor de presión en la salida
     flowIntColector.begin();  // Inicializa el sensor de flujo en la entrada
     flowOutColector.begin();  // Inicializa el sensor de flujo en la salida
-    lcdManager.begin();  // Inicializa la LCD
+    // lcdManager.begin();  // Inicializa la LCD
 
     // scanner.begin();
   
@@ -150,8 +150,8 @@ void loop() {
     Serial.println(" mL/min");
 
     //LCD Display
-    lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
-                            pressureInt, pressureOut, flowInt, flowOut);
+    // lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
+                           // pressureInt, pressureOut, flowInt, flowOut);
    
         
 

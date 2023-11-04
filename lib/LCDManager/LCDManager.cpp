@@ -5,6 +5,7 @@ LCDManager::LCDManager(uint8_t lcdAddr, uint8_t lcdCols, uint8_t lcdRows) : lcd(
 void LCDManager::begin() {
     lcd.init(); 
     lcd.backlight();
+    lcd.clear();
     lcd.print("Sistema híbrido UTS");
 }
 
