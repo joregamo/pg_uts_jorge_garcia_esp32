@@ -2,7 +2,7 @@
 #include "WiFiManager.h"
 #include "VoltageSensor.h"
 #include "CurrentSensor.h"
-#include "TemperatureAmbientSensor.h" 
+#include "TemperatureAmbientSensor.h"
 #include "TemperatureColectorSensor.h"
 #include "DS18B20Scanner.h"
 #include "PressureIntColector.h"
@@ -10,13 +10,14 @@
 #include "FlowIntColector.h"
 #include "FlowOutColector.h"
 #include "LCDManager.h"
+#include "SocketIoClient.h"
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
 
 //WiFi
-const char* ssid = "FLIA_GARCIA_GOMEZ"; //NombreDeTuRed
-const char* password = "1098797932"; //ContraseñaDeTuRed
+const char* ssid = "FAMILIA_VARGAS"; //NombreDeTuRed
+const char* password = "V1102382910"; //ContraseñaDeTuRed
 
 WiFiManager wifiManager(ssid, password);
 
