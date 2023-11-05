@@ -10,10 +10,12 @@
 #include "FlowIntColector.h"
 #include "FlowOutColector.h"
 #include "LCDManager.h"
+#include "SocketIoClientHandler.h"
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
 
+SocketIoClientHandler socketIoClient("http://your-server.com", 3000);  // Cambia por tu servidor y puerto
 //WiFi
 const char* ssid = "FLIA_GARCIA_GOMEZ"; //NombreDeTuRed
 const char* password = "1098797932"; //ContraseñaDeTuRed
