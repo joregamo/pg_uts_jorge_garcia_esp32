@@ -10,11 +10,13 @@
 #include "FlowIntColector.h"
 #include "FlowOutColector.h"
 #include "LCDManager.h"
-#include "SocketIoClient.h"
+#include "WebSocketHandler.h"
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
 
+// SocketIoClientHandler socketIoClient("192.168.1.8", 3000);
+WebSocketHandler webSocketHandler;
 //WiFi
 const char* ssid = "FAMILIA_VARGAS"; //NombreDeTuRed
 const char* password = "V1102382910"; //ContraseñaDeTuRed
@@ -55,7 +57,6 @@ const uint8_t lcdCols = 16;
 const uint8_t lcdRows = 2;
 // LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
 
-
 void setup() {
     Serial.begin(115200);
     wifiManager.connectToWiFi(); // Conecta a la red WiFi
@@ -86,11 +87,13 @@ void setup() {
     //         Serial.println();
     //     }
     // }
-    
+
+    webSocketHandler.begin("192.168.1.8", 3000);
+
 }
 
 void loop() {
-    
+    webSocketHandler.loop();
     Serial.print("--------------------\n");
     // Lectura y despliegue del voltaje
     float voltage = voltageSensor.readVoltage();
@@ -153,8 +156,6 @@ void loop() {
     //LCD Display
     // lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
                            // pressureInt, pressureOut, flowInt, flowOut);
-   
-        
 
     delay(2000);
 }
