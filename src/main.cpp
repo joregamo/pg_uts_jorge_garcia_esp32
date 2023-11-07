@@ -1,4 +1,6 @@
 #include <Arduino.h>
+// #include "Wifi.h"
+#include "Wire.h"
 #include "WiFiManager.h"
 #include "VoltageSensor.h"
 #include "CurrentSensor.h"
@@ -10,13 +12,13 @@
 #include "FlowIntColector.h"
 #include "FlowOutColector.h"
 #include "LCDManager.h"
-#include "WebSocketHandler.h"
+#include "ArduinoJson.h"
+#include "WebSocketsClient.h"
 
 // const int DS18B20_PIN = 4;
 // DS18B20Scanner scanner(DS18B20_PIN);
 
-// SocketIoClientHandler socketIoClient("192.168.1.8", 3000);
-WebSocketHandler webSocketHandler;
+WebSocketsClient webSocket;
 //WiFi
 const char* ssid = "FAMILIA_VARGAS"; //NombreDeTuRed
 const char* password = "V1102382910"; //ContraseñaDeTuRed
@@ -55,21 +57,56 @@ FlowOutColector flowOutColector(flowOutColectorPin);
 const uint8_t lcdAddr = 0x27;  // Dirección I2C de la LCD
 const uint8_t lcdCols = 16;
 const uint8_t lcdRows = 2;
-// LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
+LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
+
+void hexdump(const void *mem, uint32_t len, uint8_t cols = 16) {
+    const uint8_t* src = (const uint8_t*) mem;
+    Serial.printf("\n[HEXDUMP] Address: 0x%08X len: 0x%X (%d)", (ptrdiff_t)src, len, len);
+    for(uint32_t i = 0; i < len; i++) {
+        if(i % cols == 0) {
+            Serial.printf("\n[0x%08X] 0x%08X: ", (ptrdiff_t)src, i);
+        }
+        Serial.printf("%02X ", *src);
+        src++;
+    }
+    Serial.printf("\n");
+}
+
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+    switch(type) {
+        case WStype_DISCONNECTED:
+            Serial.printf("[WSc] Disconnected!\n");
+            break;
+        case WStype_CONNECTED:
+            Serial.printf("[WSc] Connected to url: %s\n", payload);
+            webSocket.sendTXT("Connected");
+            break;
+        case WStype_TEXT:
+            Serial.printf("[WSc] get text: %s\n", payload);
+            break;
+        case WStype_BIN:
+            Serial.printf("[WSc] get binary length: %u\n", length);
+            hexdump(payload, length);
+            break;
+        default:
+            // No default action needed for other events
+            break;
+    }
+}
 
 void setup() {
     Serial.begin(115200);
-    wifiManager.connectToWiFi(); // Conecta a la red WiFi
     tempSensor.begin();  // Inicializa el sensor de temperatura
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
     pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
     pressureOutColector.begin();  // Inicializa el sensor de presión en la salida
     flowIntColector.begin();  // Inicializa el sensor de flujo en la entrada
     flowOutColector.begin();  // Inicializa el sensor de flujo en la salida
+    wifiManager.connectToWiFi(); // Conecta a la red WiFi
     // lcdManager.begin();  // Inicializa la LCD
 
     // scanner.begin();
-  
+
     // int numberOfDevices = scanner.getDeviceCount();
     // Serial.print("Cantidad de termocuplas encontradas en el colector: ");
     // Serial.println(numberOfDevices);
@@ -88,78 +125,51 @@ void setup() {
     //     }
     // }
 
-    webSocketHandler.begin("192.168.1.8", 3000);
-
+    webSocket.begin("192.168.1.8", 3000, "/");
+    webSocket.onEvent(webSocketEvent);
+    webSocket.setReconnectInterval(5000);
 }
 
 void loop() {
-    webSocketHandler.loop();
-    Serial.print("--------------------\n");
-    // Lectura y despliegue del voltaje
-    float voltage = voltageSensor.readVoltage();
-    float voltageReal = voltage/ 0.14; // 0.1 a 0.15 Factor de conversión para el voltaje
-  
-    Serial.print("Voltage: ");
-    Serial.print(voltageReal, 2);
-    Serial.println(" V");
+    static unsigned long lastSensorReadTime = 0;
+    unsigned long currentMillis = millis();
 
-    // Lectura y despliegue de la corriente
-    float averageCurrent = currentSensor.getAverageCurrent(200);
-  
-    Serial.print("Current: ");
-    Serial.print(averageCurrent, 3);
-    Serial.println(" A");
+    webSocket.loop();
 
-    // Lectura y despliegue de la temperatura ambiente
-    float temperature = tempSensor.readTemperature();
-    
-    Serial.print("Temperature ambient: ");
-    Serial.print(temperature, 2);
-    Serial.println(" °C");
+    if (currentMillis - lastSensorReadTime > 10000) {
+        lastSensorReadTime = currentMillis;
 
-    // Lectura y despliegue de la temperatura a la entrada del colector
-    float temperatureInt = colectorSensors.readTemperatureInt();
-    Serial.print("Temperature Int Colector: ");
-    Serial.print(temperatureInt, 2);
-    Serial.println(" °C");
+        StaticJsonDocument<512> jsonDoc;
 
-    // Lectura y despliegue de la temperatura a la salida del colector
-    float temperatureOut = colectorSensors.readTemperatureOut();
-    Serial.print("Temperature Out Colector: ");
-    Serial.print(temperatureOut, 2);
-    Serial.println(" °C");
+        // Leer datos de los sensores
+        float voltage = voltageSensor.readVoltage();
+        float voltageReal = voltage / 0.14;
+        float averageCurrent = currentSensor.getAverageCurrent(200);
+        float temperature = tempSensor.readTemperature();
+        float temperatureInt = colectorSensors.readTemperatureInt();
+        float temperatureOut = colectorSensors.readTemperatureOut();
+        float pressureInt = pressureIntColector.readPressure();
+        float pressureOut = pressureOutColector.readPressure();
+        float flowInt = flowIntColector.readFlow();
+        float flowOut = flowOutColector.readFlow();
 
-    // Lectura y despliegue de la presión a la entrada del colector
-    float pressureInt = pressureIntColector.readPressure();
-    Serial.print("Pressure Int Colector: ");
-    Serial.print(pressureInt, 2);
-    Serial.println(" PSI");
+        // Asignar valores al objeto JSON
+        jsonDoc["voltage"] = voltageReal;
+        jsonDoc["current"] = averageCurrent;
+        jsonDoc["temperatureAmbient"] = temperature;
+        jsonDoc["temperatureIntCollector"] = temperatureInt;
+        jsonDoc["temperatureOutCollector"] = temperatureOut;
+        jsonDoc["pressureIntCollector"] = pressureInt;
+        jsonDoc["pressureOutCollector"] = pressureOut;
+        jsonDoc["flowIntCollector"] = flowInt;
+        jsonDoc["flowOutCollector"] = flowOut;
 
-    // Lectura y despliegue de la presión a la salida del colector
-    float pressureOut = pressureOutColector.readPressure();
-    Serial.print("Pressure Out Colector: ");
-    Serial.print(pressureOut, 2);
-    Serial.println(" PSI");
+        // Convertir a String JSON
+        String jsonString;
+        serializeJson(jsonDoc, jsonString);
 
-    // Lectura y despliegue del flujo a la entrada del colector
-    float flowInt = flowIntColector.readFlow();
-    Serial.print("Flow Int Colector: ");
-    Serial.print(flowInt, 2);
-    Serial.println(" mL/min");
-
-    // Lectura y despliegue del flujo a la salida del colector
-    float flowOut = flowOutColector.readFlow();
-    Serial.print("Flow Out Colector: ");
-    Serial.print(flowOut, 2);
-    Serial.println(" mL/min");
-
-    //LCD Display
-    // lcdManager.displayData(voltageReal, averageCurrent, temperature, temperatureInt, temperatureOut, 
-                           // pressureInt, pressureOut, flowInt, flowOut);
-
-    delay(2000);
+        // Enviar JSON como texto al WebSocket server
+        Serial.println(jsonString);
+        webSocket.sendTXT(jsonString);
+    }
 }
-
-
-
-

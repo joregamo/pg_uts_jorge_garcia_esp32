@@ -1,5 +1,6 @@
-#ifndef WebSocketHandler_h
-#define WebSocketHandler_h
+// WebSocketHandler.h
+#ifndef WEBSOCKETHANDLER_H
+#define WEBSOCKETHANDLER_H
 
 #include <WebSocketsClient.h>
 
