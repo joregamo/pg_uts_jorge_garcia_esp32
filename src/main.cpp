@@ -1,5 +1,4 @@
 #include <Arduino.h>
-// #include "Wifi.h"
 #include "Wire.h"
 #include "WiFiManager.h"
 #include "VoltageSensor.h"
@@ -15,15 +14,17 @@
 #include "ArduinoJson.h"
 #include "WebSocketsClient.h"
 
-// const int DS18B20_PIN = 4;
-// DS18B20Scanner scanner(DS18B20_PIN);
-
+// WebSockets
 WebSocketsClient webSocket;
 //WiFi
-const char* ssid = "FAMILIA_VARGAS"; //NombreDeTuRed
-const char* password = "V1102382910"; //ContraseñaDeTuRed
-
+const char* ssid = "FLIA_GARCIA_GOMEZ"; //NombreDeTuRed FAMILIA_VARGAS
+const char* password = "1098797932"; //ContraseñaDeTuRed V1102382910
+// Añade tus redes WiFi aquí
 WiFiManager wifiManager(ssid, password);
+
+
+
+// WiFiManager wifiManager(ssid, password);
 
 // Sensor de voltaje
 const int voltageSensorPin = 32;
@@ -48,8 +49,8 @@ PressureIntColector pressureIntColector(pressureIntColectorPin);
 PressureOutColector pressureOutColector(pressureOutColectorPin);
 
 // Sensores de Flujo
-const int flowIntColectorPin = 12;
-const int flowOutColectorPin = 13;
+const int flowIntColectorPin = 13;
+const int flowOutColectorPin = 14;
 FlowIntColector flowIntColector(flowIntColectorPin);
 FlowOutColector flowOutColector(flowOutColectorPin);
 
@@ -96,6 +97,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
 void setup() {
     Serial.begin(115200);
+    wifiManager.addWiFi("FAMILIA_VARGAS", "V1102382910");
+    wifiManager.addWiFi("#SOYUTEISTA", ""); 
     tempSensor.begin();  // Inicializa el sensor de temperatura
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
     pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
@@ -105,27 +108,7 @@ void setup() {
     wifiManager.connectToWiFi(); // Conecta a la red WiFi
     // lcdManager.begin();  // Inicializa la LCD
 
-    // scanner.begin();
-
-    // int numberOfDevices = scanner.getDeviceCount();
-    // Serial.print("Cantidad de termocuplas encontradas en el colector: ");
-    // Serial.println(numberOfDevices);
-  
-    // for (int i = 0; i < numberOfDevices; i++) {
-    //     DeviceAddress tempDeviceAddress;
-    //     if (scanner.getAddress(tempDeviceAddress, i)) {
-    //         Serial.print("Dispositivo ");
-    //         Serial.print(i);
-    //         Serial.print(" Dirección: ");
-    //         for (uint8_t j = 0; j < 8; j++) {
-    //             Serial.print(tempDeviceAddress[j], HEX);
-    //             if (j < 7) Serial.print(":");
-    //         }
-    //         Serial.println();
-    //     }
-    // }
-
-    webSocket.begin("192.168.1.8", 3000, "/");
+    webSocket.begin("192.168.1.3", 3000, "/");
     webSocket.onEvent(webSocketEvent);
     webSocket.setReconnectInterval(5000);
 }
@@ -136,7 +119,7 @@ void loop() {
 
     webSocket.loop();
 
-    if (currentMillis - lastSensorReadTime > 10000) {
+    if (currentMillis - lastSensorReadTime > 5000) {
         lastSensorReadTime = currentMillis;
 
         StaticJsonDocument<512> jsonDoc;
@@ -154,15 +137,15 @@ void loop() {
         float flowOut = flowOutColector.readFlow();
 
         // Asignar valores al objeto JSON
-        jsonDoc["voltage"] = voltageReal;
-        jsonDoc["current"] = averageCurrent;
-        jsonDoc["temperatureAmbient"] = temperature;
-        jsonDoc["temperatureIntCollector"] = temperatureInt;
-        jsonDoc["temperatureOutCollector"] = temperatureOut;
-        jsonDoc["pressureIntCollector"] = pressureInt;
-        jsonDoc["pressureOutCollector"] = pressureOut;
-        jsonDoc["flowIntCollector"] = flowInt;
-        jsonDoc["flowOutCollector"] = flowOut;
+        jsonDoc["voltage"] = round(voltageReal * 100) / 100.0;
+        jsonDoc["current"] = round(averageCurrent * 100) / 100.0;
+        jsonDoc["temperatureAmbient"] = round(temperature * 100) / 100.0;
+        jsonDoc["temperatureIntCollector"] = round(temperatureInt * 100) / 100.0;
+        jsonDoc["temperatureOutCollector"] = round(temperatureOut * 100) / 100.0;
+        jsonDoc["pressureIntCollector"] = round(pressureInt * 100) / 100.0;
+        jsonDoc["pressureOutCollector"] = round(pressureOut * 100) / 100.0;
+        jsonDoc["flowIntCollector"] = round(flowInt * 100) / 100.0;
+        jsonDoc["flowOutCollector"] = round(flowOut * 100) / 100.0;
 
         // Convertir a String JSON
         String jsonString;

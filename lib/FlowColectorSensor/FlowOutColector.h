@@ -8,10 +8,12 @@ public:
     FlowOutColector(int pin);
     void begin();
     float readFlow();
+    static void pulseCounter(); // Esto debe ser público si se usa como ISR
+
 private:
     int _pin;
-    static void pulseCounter();
-    static volatile int numPulses;
+    static volatile int numPulsesOut;
+    static unsigned long lastFlowReadTime; // Añade esta variable para rastrear el último tiempo de lectura
 };
 
-#endif
+#endif // FlowOutColector_h
