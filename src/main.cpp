@@ -22,12 +22,12 @@ const char* password = "1098797932"; //ContraseñaDeTuRed V1102382910
 // Añade tus redes WiFi aquí
 WiFiManager wifiManager(ssid, password);
 
-
-
 // WiFiManager wifiManager(ssid, password);
 
 // Sensor de voltaje
 const int voltageSensorPin = 32;
+float R1 = 30000.0;
+float R2 = 7500.0;
 VoltageSensor voltageSensor(voltageSensorPin);
 
 // Sensor de corriente
@@ -99,6 +99,7 @@ void setup() {
     Serial.begin(115200);
     wifiManager.addWiFi("FAMILIA_VARGAS", "V1102382910");
     wifiManager.addWiFi("#SOYUTEISTA", ""); 
+    wifiManager.addWiFi("Tenda_A03B28", "4q6qJPSh"); 
     tempSensor.begin();  // Inicializa el sensor de temperatura
     colectorSensors.begin(); // Inicializa los sensores de temperatura del colector
     pressureIntColector.begin();  // Inicializa el sensor de presión en la entrada
@@ -108,7 +109,7 @@ void setup() {
     wifiManager.connectToWiFi(); // Conecta a la red WiFi
     // lcdManager.begin();  // Inicializa la LCD
 
-    webSocket.begin("192.168.1.3", 3000, "/");
+    webSocket.begin("10.10.7.240", 3000, "/");
     webSocket.onEvent(webSocketEvent);
     webSocket.setReconnectInterval(5000);
 }
@@ -126,7 +127,7 @@ void loop() {
 
         // Leer datos de los sensores
         float voltage = voltageSensor.readVoltage();
-        float voltageReal = voltage / 0.14;
+        float voltageReal = voltage / 0.16; // puedes ser 0.14 o 0.16 depende del voltage leido
         float averageCurrent = currentSensor.getAverageCurrent(200);
         float temperature = tempSensor.readTemperature();
         float temperatureInt = colectorSensors.readTemperatureInt();

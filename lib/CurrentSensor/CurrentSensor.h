@@ -10,7 +10,7 @@ private:
     int _pin;
     static constexpr float ADC_RESOLUTION = 4095.0; // ESP32 ADC is 12-bit
     static constexpr float V_REF = 3.3; // Reference voltage for ESP32 ADC
-    static constexpr float SENSOR_OFFSET = 0.5798; // 0.5795 ,0.617 a 0.98V for the ACS712 when no current (con 10mA de diferencia con respecto a la lectura real)
+    static constexpr float SENSOR_OFFSET = 0.66; // 2.48V for the ACS712 when no current, o 0.67V porque tiene el divisor de voltaje.
     static constexpr float SENSOR_SENSITIVITY = 0.1; // Sensitivity of the ACS712 20A module (100 mV/A)
 };
 
