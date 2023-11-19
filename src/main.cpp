@@ -26,8 +26,6 @@ WiFiManager wifiManager(ssid, password);
 
 // Sensor de voltaje
 const int voltageSensorPin = 32;
-float R1 = 30000.0;
-float R2 = 7500.0;
 VoltageSensor voltageSensor(voltageSensorPin);
 
 // Sensor de corriente
