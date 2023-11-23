@@ -53,10 +53,10 @@ FlowIntColector flowIntColector(flowIntColectorPin);
 FlowOutColector flowOutColector(flowOutColectorPin);
 
 //LCD
-const uint8_t lcdAddr = 0x27;  // Dirección I2C de la LCD
-const uint8_t lcdCols = 16;
-const uint8_t lcdRows = 2;
-LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
+// const uint8_t lcdAddr = 0x27;  // Dirección I2C de la LCD
+// const uint8_t lcdCols = 16;
+// const uint8_t lcdRows = 2;
+// LCDManager lcdManager(lcdAddr, lcdCols, lcdRows);
 
 void hexdump(const void *mem, uint32_t len, uint8_t cols = 16) {
     const uint8_t* src = (const uint8_t*) mem;
@@ -107,7 +107,7 @@ void setup() {
     wifiManager.connectToWiFi(); // Conecta a la red WiFi
     // lcdManager.begin();  // Inicializa la LCD
 
-    webSocket.begin("10.10.7.240", 3000, "/");
+    webSocket.begin("192.168.1.5", 3000, "/"); //192.168.1.5 10.10.28.143
     webSocket.onEvent(webSocketEvent);
     webSocket.setReconnectInterval(5000);
 }
